@@ -18,6 +18,11 @@ dependencies:
 
   sensors_plus: ^1.2.1
 
+  ml_algo: ^16.2.3
+  ml_dataframe: ^0.5.1
+
+  flutter_plot: ^0.1.0
+
 
 dev_dependencies:
   flutter_test:
