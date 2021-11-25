@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:accelerator/interface/widget/custom_plot.dart';
+import 'package:accelerator/models/log_data_structure.dart';
 import 'package:accelerator/references.dart';
 import 'package:accelerator/resources/helper/data_helper.dart';
 import 'package:accelerator/resources/provider/acceleration_provider.dart';
@@ -21,18 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool recording = false;
 
   Stream<double> accelerometerStream = AccelerationProvider.accelerationStream();
-  List<double> acceleratorEvents = List<double>.generate(References.regressionSize, (index) => 0.0);
-
-  List<Point> regressionValues = <Point>[];
-  List<Point> accelerometerValues = <Point>[];
-
-  void addAcceleratorEvent(final double event) {
-    acceleratorEvents.add(event);
-
-    if(acceleratorEvents.length > References.samplingRate * 10) {
-      acceleratorEvents.removeAt(0);
-    }
-  }
+  LogDataStructure data = LogDataStructure();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  DataHelper? dataHelper;
   DateTime lastData = DateTime.now();
 
   Widget buildBody() {
@@ -67,20 +56,19 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
         if (snapshot.hasData) {
           if (recording && DateTime.now().difference(lastData) > References.period) {
-            addAcceleratorEvent(snapshot.data!);
+            data.addObservation(DateTime.now(), snapshot.data!);
             lastData = DateTime.now();
 
-            if (acceleratorEvents.length % References.regressionSize == 0) {
-              dataHelper = DataHelper(acceleratorEvents);
-              regressionValues.addAll(dataHelper!.correlationData);
+            if (data.accelerationValues.length % References.regressionSize == 0 && data.accelerationValues.isNotEmpty) {
+              data.getCorrelationValue();
             }
           }
 
-          if (dataHelper != null) {
+          if (data.accelerationPoints.isNotEmpty) {
             return ListView(
               children: [
-                CustomPlot(data: dataHelper!.plainAccelerometer, xTitle: "Time", yTitle: "Y Acceleration"),
-                CustomPlot(data: regressionValues, xTitle: "Time", yTitle: "Y Correlation"),
+                CustomPlot(data: data.accelerationPoints, xTitle: "Time", yTitle: "Y Acceleration"),
+                if (data.correlationPoints.isNotEmpty) CustomPlot(data: data.correlationPoints, xTitle: "Time", yTitle: "Y Correlation"),
               ],
             );
           }
