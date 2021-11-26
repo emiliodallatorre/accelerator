@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:accelerator/references.dart';
+import 'package:flutter/material.dart';
 
 class LogDataStructure {
   final Map<int, double> accelerationValues = <int, double>{};
@@ -10,11 +11,16 @@ class LogDataStructure {
 
   List<Point> get correlationPoints => mapToPoints(correlationValues);
 
-  void addObservation(final DateTime date, final double value) {
-    accelerationValues[date.millisecondsSinceEpoch] = value;
+  DateTime? startDateTime;
 
-    while (accelerationValues.length > References.samplingRate * 10) {
+  void addObservation(final DateTime date, final double value) {
+    startDateTime ??= date;
+
+    accelerationValues[date.difference(startDateTime!).inMilliseconds] = value;
+
+    while (accelerationValues.length > References.samplingRate * 1) {
       List<int> sortedValues = accelerationValues.keys.toList()..sort();
+      debugPrint(sortedValues.toString());
 
       accelerationValues.remove(sortedValues.first);
     }
@@ -23,6 +29,7 @@ class LogDataStructure {
   Map<int, double> getLastValues() {
     List<int> sortedValues = accelerationValues.keys.toList()..sort();
 
+    debugPrint("AAA");
     List<int> lastValues = <int>[];
     for (int value in sortedValues.reversed) {
       if (lastValues.length <= References.regressionSize) {
@@ -50,6 +57,7 @@ class LogDataStructure {
       points.add(Point<double>(entry.key.toDouble(), entry.value));
     }
 
+    debugPrint(points.length.toString());
     return points;
   }
 }

@@ -35,8 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               if (recording) {
                 // Inizia a registrare
+                debugPrint(data.accelerationPoints.toString());
               } else {
                 // Smetti di registrare
+                data = LogDataStructure();
               }
 
               setState(() => recording = !recording);
@@ -68,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return ListView(
               children: [
                 CustomPlot(data: data.accelerationPoints, xTitle: "Time", yTitle: "Y Acceleration"),
-                if (data.correlationPoints.isNotEmpty) CustomPlot(data: data.correlationPoints, xTitle: "Time", yTitle: "Y Correlation"),
+                // if (data.correlationPoints.isNotEmpty) CustomPlot(data: data.correlationPoints, xTitle: "Time", yTitle: "Y Correlation"),
               ],
             );
           }
