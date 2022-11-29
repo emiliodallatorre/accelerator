@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_plot/flutter_plot.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class CustomPlot extends StatelessWidget {
   final List<Point> data;
@@ -11,25 +11,20 @@ class CustomPlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Plot(
-      height: 200.0,
-      data: data,
-      gridSize: new Offset(2.0, 2.0),
-      style: new PlotStyle(
-        pointRadius: 3.0,
-        outlineRadius: 1.0,
-        primary: Colors.white,
-        secondary: Colors.orange,
-        textStyle: new TextStyle(
-          fontSize: 8.0,
-          color: Colors.blueGrey,
-        ),
-        axis: Colors.blueGrey[600],
-        gridline: Colors.blueGrey[100],
+    return SfCartesianChart(
+      primaryXAxis: NumericAxis(
+        title: AxisTitle(text: xTitle),
       ),
-      padding: const EdgeInsets.fromLTRB(40.0, 12.0, 12.0, 40.0),
-      xTitle: xTitle,
-      yTitle: yTitle,
+      primaryYAxis: NumericAxis(
+        title: AxisTitle(text: yTitle),
+      ),
+      series: <ChartSeries>[
+        LineSeries<Point, double>(
+          dataSource: data,
+          xValueMapper: (Point point, _) => point.x.toDouble(),
+          yValueMapper: (Point point, _) => point.y,
+        ),
+      ],
     );
   }
 }

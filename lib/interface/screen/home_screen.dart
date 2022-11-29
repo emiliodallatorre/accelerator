@@ -1,13 +1,8 @@
-import 'dart:math';
-
 import 'package:accelerator/interface/widget/custom_plot.dart';
 import 'package:accelerator/models/log_data_structure.dart';
 import 'package:accelerator/references.dart';
-import 'package:accelerator/resources/helper/data_helper.dart';
 import 'package:accelerator/resources/provider/acceleration_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_plot/flutter_plot.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String route = "/homeScreen";
@@ -67,11 +62,15 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (data.accelerationPoints.isNotEmpty) {
-            return ListView(
-              children: [
-                CustomPlot(data: data.accelerationPoints, xTitle: "Time", yTitle: "Y Acceleration"),
-                if (data.correlationPoints.isNotEmpty) CustomPlot(data: data.correlationPoints, xTitle: "Time", yTitle: "Y Correlation"),
-              ],
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomPlot(data: data.accelerationPoints, xTitle: "Time", yTitle: "Y Acceleration"),
+                  if (data.correlationPoints.isNotEmpty) CustomPlot(data: data.correlationPoints, xTitle: "Time", yTitle: "Y Correlation"),
+                ],
+              ),
             );
           }
         }
